@@ -1,6 +1,7 @@
 package com.wileyedge.flooringmastery.dao;
 
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,28 +21,32 @@ public class OrderDAOImpl implements IOrderDAO {
 
 	@Override
 	public Map<Integer,Order> readOrdersFromFile() {
-		 Map<Integer, Order> orderMap = new HashMap<>();
-		    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(orderFileName))) {
-		        Object obj = ois.readObject();
+		Map<Integer, Order> orderMap = new HashMap<>();
+		try  {
+			FileInputStream fis = new FileInputStream(orderFileName);
+			BufferedInputStream bis = new BufferedInputStream(fis);
+			ObjectInputStream ois = new ObjectInputStream(bis);
 
-		        if (obj == null) {
-		            System.out.println("No item in file.");
-		        } else {
-		            if (obj instanceof Map) {
-		                orderMap = (Map<Integer, Order>) obj;
-		                System.out.println("File read successfully.");
-		            }
-		        }
-		    } catch (FileNotFoundException e) {
-		        System.out.println("File not found. Empty orderMap is created instead.");
-		    } catch (IOException e) {
-		        System.out.println("Error reading from file: " + e.getMessage());
-		    } catch (ClassNotFoundException e) {
-		        System.out.println("Class not found!");
-		    } catch (Exception e) {
-		        System.out.println("Oops! Something went wrong. Please try again later.");
-		    }
-		
+			Object obj = ois.readObject();
+
+			if (obj == null) {
+				System.out.println("No item in file.");
+			} else {
+				if (obj instanceof Map) {
+					orderMap = (Map<Integer, Order>) obj;
+					System.out.println("File read successfully.");
+				}
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found. Empty orderMap is created instead.");
+		} catch (IOException e) {
+			System.out.println("Error reading from file: " + e.getMessage());
+		} catch (ClassNotFoundException e) {
+			System.out.println("Class not found!");
+		} catch (Exception e) {
+			System.out.println("Oops! Something went wrong. Please try again later.");
+		}
+
 		return orderMap;
 	}
 
@@ -60,7 +65,7 @@ public class OrderDAOImpl implements IOrderDAO {
 		} catch (IOException e) {
 			System.out.println("Error writing to file: " + e.getMessage());
 		}
-		
+
 	}
 
 }

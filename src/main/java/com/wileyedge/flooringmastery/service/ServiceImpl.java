@@ -35,8 +35,6 @@ public class ServiceImpl implements IService {
 	public int addNewOrder(Order order) {
 		System.out.println("Service layer ---addNewOrder() invoked. ");
 		int newOrderId = 1;
-
-
 		return newOrderId;
 	}
 
@@ -44,76 +42,73 @@ public class ServiceImpl implements IService {
 	@Override
 	public void loadTaxFile() {
 		try (BufferedReader reader = new BufferedReader(new FileReader(taxFileName))) {
-	        String line;
-	        boolean isFirstLine = true;
-	        while ((line = reader.readLine()) != null) {
-	            if (isFirstLine) {
-	                isFirstLine = false;
-	                continue; // Skip the first line
-	            }
-	            String[] parts = line.split(",");
-	            if (parts.length == 3) {
-	                String taxAbbrev = parts[0].trim();
-	                String stateName = parts[1].trim();
-	                BigDecimal taxRate = new BigDecimal(parts[2].trim());
-	                Tax tax = new Tax(taxAbbrev, stateName, taxRate);
-	                taxMap.put(taxAbbrev, tax);
-	            }
-	            
-	            // Display taxMap 
-	            System.out.println("Tax Map:");
-	            for (Map.Entry<String, Tax> entry : taxMap.entrySet()) {
-	                String taxAbbrev = entry.getKey();
-	                Tax tax = entry.getValue();
-	                System.out.println("Tax Abbreviation: " + taxAbbrev);
-	                System.out.println("Tax Details: " + tax.toString());
-	                System.out.println("-----------------------");
-	            }
-	            
-	        }
-	    } catch (IOException e) {
-	        System.out.println("Error reading tax file: " + e.getMessage());
-	    }
+			String line;
+			boolean isFirstLine = true;
+			while ((line = reader.readLine()) != null) {
+				if (isFirstLine) {
+					isFirstLine = false;
+					continue; // Skip the first line
+				}
+				String[] parts = line.split(",");
+				if (parts.length == 3) {
+					String taxAbbrev = parts[0].trim();
+					String stateName = parts[1].trim();
+					BigDecimal taxRate = new BigDecimal(parts[2].trim());
+					Tax tax = new Tax(taxAbbrev, stateName, taxRate);
+					taxMap.put(taxAbbrev, tax);
+				}
+			}
+			// Display taxMap 
+			System.out.println("Tax Map:");
+			for (Map.Entry<String, Tax> entry : taxMap.entrySet()) {
+				String taxAbbrev = entry.getKey();
+				Tax tax = entry.getValue();
+				System.out.println("Tax Details: " + tax.toString());
+			}
+			System.out.println("-----------------------");
+		} catch (IOException e) {
+			System.out.println("Error reading tax file: " + e.getMessage());
+		}
 
 	}
 
 	@Override
 	public void loadProductFile() {
-		try (BufferedReader reader = new BufferedReader(new FileReader(productFileName))) {
-	        String line;
-	        boolean isFirstLine = true;
-	        while ((line = reader.readLine()) != null) {
-	            if (isFirstLine) {
-	                isFirstLine = false;
-	                continue; // Skip the first line
-	            }
-	            String[] parts = line.split(",");
-	            if (parts.length == 3) {
-	                String productTypeName = parts[0].trim();
-	                BigDecimal costPerSquareFoot = new BigDecimal(parts[1].trim());
-	                BigDecimal laborCostPerSquareFoot = new BigDecimal(parts[2].trim());
 
-	                // Convert the product type name to the corresponding ProductType enum
-	                ProductType productType = ProductType.valueOf(productTypeName.toUpperCase());
+		try{
+			FileReader fr = new FileReader(productFileName);
+			BufferedReader reader = new BufferedReader(fr);
 
-	                Product product = new Product(productType, costPerSquareFoot, laborCostPerSquareFoot);
-	                productMap.put(productType, product);
-	            }
-	            
-	            System.out.println("Product Map:");
-	            for (Map.Entry<ProductType, Product> entry : productMap.entrySet()) {
-	                ProductType productType = entry.getKey();
-	                Product product = entry.getValue();
-	                System.out.println("Product Type: " + productType);
-	                System.out.println("Product Details: " + product.toString());
-	                System.out.println("-----------------------");
-	            }
-	            
-	            
-	        }
-	    } catch (IOException e) {
-	        System.out.println("Error reading product file: " + e.getMessage());
-	    }
+			String line;
+			boolean isFirstLine = true;
+			while ((line = reader.readLine()) != null) {
+				if (isFirstLine) {
+					isFirstLine = false;
+					continue; // Skip the first line
+				}
+				String[] parts = line.split(",");
+				if (parts.length == 3) {
+					String productTypeName = parts[0].trim();
+					BigDecimal costPerSquareFoot = new BigDecimal(parts[1].trim());
+					BigDecimal laborCostPerSquareFoot = new BigDecimal(parts[2].trim());
+
+					// Convert the product type name to the corresponding ProductType enum
+					ProductType productType = ProductType.valueOf(productTypeName.toUpperCase());
+
+					Product product = new Product(productType, costPerSquareFoot, laborCostPerSquareFoot);
+					productMap.put(productType, product);
+				}
+			}
+			System.out.println("Product Map:");
+			for (Map.Entry<ProductType, Product> entry : productMap.entrySet()) {
+				ProductType productType = entry.getKey();
+				Product product = entry.getValue();
+				System.out.println("Product Details: " + product.toString());
+			}
+			System.out.println("-----------------------");
+		} catch (IOException e) {
+			System.out.println("Error reading product file: " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -122,11 +117,11 @@ public class ServiceImpl implements IService {
 		if (ordersFromFile != null && !ordersFromFile.isEmpty()) {
 			this.orderMap.putAll(ordersFromFile);
 			for (Map.Entry<Integer, Order> entry : orderMap.entrySet()) {
-		        System.out.println(entry.getValue());
-		        System.out.println("-----------------------");
-		    }
+				System.out.println(entry.getValue());
+			}
+			System.out.println("-----------------------");
 		}else {
-			System.out.println("No orders in file.");
+			System.out.println("No orders to display.");
 		}
 	}
 
