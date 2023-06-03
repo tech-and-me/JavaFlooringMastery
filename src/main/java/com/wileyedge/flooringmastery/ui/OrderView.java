@@ -43,12 +43,16 @@ public class OrderView {
     public void displayError(String error) {
         io.print("ERROR: " + error);
     }
+    
+    public void displayTransactionFailed(String failedMessage) {
+        io.print("Transaction failed: " + failedMessage);
+    }
 
     public Order getNewOrder() {
     	Order order = null;
     	io.print("Enter new order info");
     	try {
-    		LocalDate orderDate = io.getInputAsFutureDate("Order Date","Enter order date (dd/mm/yyy) : ");
+    		LocalDate orderDate = io.getInputAsFutureDate("Order date","Enter order date (dd/mm/yyy) : ");
     		String customerName = io.getInputAsString("Customer name","Enter customer name : ");
     		StateAbbrev stateAbbrev = io.getInputAsState("State","Enter state abbreveation : ");
     		ProductType productType = io.getInputAsProductType("Product type","Please enter product type : "); 
@@ -61,6 +65,26 @@ public class OrderView {
     	}
         return order;
     }
+    
+    public LocalDate getOrderDate() {
+    	LocalDate orderDate = null;
+    	try {
+    		orderDate = io.getInputAsFutureDate("Order date","Enter order date (dd/mm/yyy) : ");
+    	}catch(Exception e) {
+    		io.print("Oop! something went wrong in orderDate()"); 
+    	}
+    	return orderDate;
+    }
+    
+    public int getOrderNumber() {
+    	int orderNumber = -1;
+    	try {
+    		orderNumber = io.getInputAsInteger("Order number", "Enter order number");
+    	}catch(Exception e) {
+    		io.print("Oop! something went wrong in getOrderNumber()"); 
+    	}
+    	return orderNumber;
+    }
 
     public void displayExit() {
         io.print("Existing Master Flooring Order App ...");
@@ -72,13 +96,13 @@ public class OrderView {
     }
     
     public void displayAllOrders(Map<Integer,Order> orderMap) {
-    	if(orderMap == null) {
+    	if(orderMap == null || orderMap.isEmpty()) {
     		io.print("No order to display.");
-    		return;
-    	}
-    	io.print("-------------ORDER LIST-------------");
-    	for(Order order:orderMap.values()) {
-    		io.print(order.toString());
+    	}else {
+    		io.print("-------------ORDER LIST-------------");
+        	for(Order order:orderMap.values()) {
+        		io.print(order.toString());
+        	}
     	}
     }
 
@@ -98,9 +122,19 @@ public class OrderView {
     	if(input.equalsIgnoreCase("Y")) {
     		return true;
     	}else {
-    		io.print("Darft order cancelled successfully.");
+    		io.print("Draft order cancelled successfully.");
     		return false;
     	}
+    }
+    
+    public boolean confirmRemoveOrder() {
+    	String isRemove = io.getInputAsStringYN("Are you sure you want to remove this order ? Y/N :  ");
+    	if(isRemove.equalsIgnoreCase("Y")) {
+    		return true;
+    	}else {
+    		io.print("Transaction abort: No action taken for this order");
+    	}
+    	return false;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.wileyedge.flooringmastery.service;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import com.wileyedge.flooringmastery.dto.Order;
@@ -23,4 +24,5 @@ public interface IService {
 	void setCostPerSquareFoot(Order order);
 	Map<Integer, Order> getAllOrders();
 	void cancelDraftOrder(Order draftOrder);
+	Order getExistingOrder(LocalDate orderDate, int orderNumber);
 }

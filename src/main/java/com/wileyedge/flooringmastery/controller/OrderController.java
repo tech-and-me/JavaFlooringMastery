@@ -1,5 +1,6 @@
 package com.wileyedge.flooringmastery.controller;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class OrderController {
 		
 		//display menu
 		while(true) {
+			Order order = null;
 			int choice = view.displayMenuAndGetChoice();
 			switch(choice) {
 			case 1: //Display Orders
@@ -36,7 +38,7 @@ public class OrderController {
 				view.displayAllOrders(orderMap);
 				break;
 			case 2: // Add an Order
-				Order order = view.getNewOrder();
+				order = view.getNewOrder();
 				if(order!= null) {
 					service.caculateTotalOrderCostAndTax(order);
 					boolean confirmOrder = view.confirmOrder(order);
@@ -49,10 +51,30 @@ public class OrderController {
 				}
 				break;
 			case 3: // Edit an Order
-				System.out.println("Edit an order ...");
+//				LocalDate orderDate = view.getOrderDate();
+//				int orderNumber = view.getOrderNumber();
+//				if(orderDate!=null && orderNumber!=-1) {
+//					order = service.getExistingOrder(orderDate,orderNumber);
+//					if(order != null) {
+//						//get updated order
+//						view.getUpdatedOrder(order);
+//					}
+//				}
 				break;
 			case 4: // Remove an Order
-				System.out.println("Remove an order ...");
+				LocalDate orderDate = view.getOrderDate();
+				int orderNumber = view.getOrderNumber();
+				if(orderDate!= null && orderNumber!=-1) {
+					order = service.getExistingOrder(orderDate,orderNumber);
+					if(order != null) {
+						if(view.confirmRemoveOrder()) {
+							service.removeOrder(orderNumber);
+						}
+					}else {
+						view.displayTransactionFailed("order not found !");
+					}
+				}
+				
 				break;
 			case 5: // Export All Data
 				System.out.println("Export all data...");

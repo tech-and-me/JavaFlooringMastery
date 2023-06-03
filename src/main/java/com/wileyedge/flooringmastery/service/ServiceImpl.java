@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -224,6 +225,20 @@ public class ServiceImpl implements IService {
 			}
 		}
 		System.out.println("----------------------------");
+	}
+	
+	@Override 
+	public Order getExistingOrder(LocalDate orderDate,int orderNumber){
+		Order searchOrder = null;
+		for(Order order: orderMap.values()) {
+			if(order.getOrderDate().equals(orderDate) && order.getOrderNumber() == orderNumber) {
+				searchOrder = order;
+				break;
+			}
+		}
+		
+		
+		return searchOrder;
 	}
 
 	@Override
