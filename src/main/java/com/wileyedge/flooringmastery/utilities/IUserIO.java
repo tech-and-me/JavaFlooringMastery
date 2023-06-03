@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.wileyedge.flooringmastery.dto.ProductType;
+import com.wileyedge.flooringmastery.dto.StateAbbrev;
 
 
 public interface IUserIO {
@@ -19,5 +20,6 @@ public interface IUserIO {
 	BigDecimal getInputAsBigDecimal(String varName, String prompt);
 	BigDecimal getInputAsPositiveBigDecimal(String varName, String prompt);
 	ProductType getInputAsProductType(String varName,String prompt);
+	StateAbbrev getInputAsState(String varName,String prompt);
     
 }

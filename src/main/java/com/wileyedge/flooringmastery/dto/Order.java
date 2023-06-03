@@ -5,11 +5,10 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Order {
-	private int orderId;
-	private LocalDate orderDate;
 	private int orderNumber;
+	private LocalDate orderDate;
 	private String customerName;
-	private String state;
+	private StateAbbrev stateAbbrev;
 	private BigDecimal taxRate;
 	private ProductType productType;
 	private BigDecimal area;
@@ -20,35 +19,23 @@ public class Order {
 	private BigDecimal tax;
 	private BigDecimal total;
 	
-	public Order(LocalDate orderDate, String customerName, String state, ProductType productType, BigDecimal area) {
+	private static int lastOrderId = 0;
+	
+	public Order(LocalDate orderDate, String customerName, StateAbbrev state, ProductType productType, BigDecimal area) {
 		this.orderDate = orderDate;
 		this.customerName = customerName;
-		this.state = state;
+		this.stateAbbrev = state;
 		this.productType = productType;
 		this.area = area;
-		
-		//calculate and set material cost
-		calculateMaterialCost();
-		
-		//calculate and set labor cost
-	    calculateLaborCost();
-	    
-	    //calculate and set tax
-	    calculateTax();
-	    
-	    //calculate and set total
-	    calculateTotal();
-	    
 	}
 	
-	public int getOrderId() {
-		return orderId;
+	public static int getLastOrderId() {
+		return lastOrderId;
 	}
 
-	public void setOrderId(int orderId) {
-		this.orderId = orderId;
+	public static void setLastOrderId(int lastOrderId) {
+		Order.lastOrderId = lastOrderId;
 	}
-
 
 	public LocalDate getOrderDate() {
 		return orderDate;
@@ -78,12 +65,12 @@ public class Order {
 		this.customerName = customerName;
 	}
 
-	public String getState() {
-		return state;
+	public StateAbbrev getStateAbbrev() {
+		return stateAbbrev;
 	}
 
-	public void setState(String state) {
-		this.state = state;
+	public void setStateAbbrev(StateAbbrev stateAbbrev) {
+		this.stateAbbrev = stateAbbrev;
 	}
 
 	public BigDecimal getTaxRate() {
@@ -157,37 +144,16 @@ public class Order {
 	public void setTotal(BigDecimal total) {
 		this.total = total;
 	}
-	
-	private void calculateMaterialCost() {
-		System.out.println("Inside calculate material cost");
-	    this.materialCost = this.area.multiply(this.productType.getPricePerSquareFoot());
-	}
 
-	private void calculateLaborCost() {
-		System.out.println("Inside calculate laborCost");
-	    this.laborCost = this.area.multiply(this.laborCostPerSquareFoot);
-	}
-
-	private void calculateTax() {
-		System.out.println("Inside calculate tax");
-	    BigDecimal totalCost = this.materialCost.add(this.laborCost);
-	    BigDecimal taxRatePercentage = this.taxRate.divide(BigDecimal.valueOf(100));
-	    this.tax = totalCost.multiply(taxRatePercentage);
-	}
-
-	private void calculateTotal() {
-		System.out.println("Inside calculate total");
-	    this.total = this.materialCost.add(this.laborCost).add(this.tax);
-	}
-	
 	@Override
 	public String toString() {
-		return "Order [orderDate=" + orderDate + ", orderNumber=" + orderNumber + ", customerName=" + customerName
-				+ ", state=" + state + ", taxRate=" + taxRate + ", productType=" + productType + ", area=" + area
-				+ ", costPerSquareFoot=" + costPerSquareFoot + ", laborCostPerSquareFoot=" + laborCostPerSquareFoot
-				+ ", materialCost=" + materialCost + ", laborCost=" + laborCost + ", tax=" + tax + ", total=" + total
-				+ "]";
+		return "Order [orderNumber=" + orderNumber + ", orderDate=" + orderDate + ", customerName=" + customerName
+				+ ", productType=" + productType + ", area=" + area + ", materialCost=" + materialCost + ", laborCost="
+				+ laborCost + ", tax=" + tax + ", total=" + total + "]";
 	}
+
+	
+	
 	
 	
 }

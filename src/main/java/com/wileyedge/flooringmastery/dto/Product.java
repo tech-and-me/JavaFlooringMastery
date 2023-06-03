@@ -5,14 +5,16 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
+@Component
 public class Product {
 	private ProductType productType;
     private BigDecimal costPerSquareFoot;
     private BigDecimal laborCostPerSquareFoot;
+    
+    public Product() {}
 
-    public Product(ProductType productType, BigDecimal costPerSquareFoot, BigDecimal laborCostPerSquareFoot) {
-        this.productType = productType;
+    public Product(String productType, BigDecimal costPerSquareFoot, BigDecimal laborCostPerSquareFoot) {
+        this.productType = ProductType.valueOf(productType.toUpperCase());
         this.costPerSquareFoot = costPerSquareFoot;
         this.laborCostPerSquareFoot = laborCostPerSquareFoot;
     }

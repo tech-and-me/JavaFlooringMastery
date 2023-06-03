@@ -2,12 +2,14 @@ package com.wileyedge.flooringmastery.ui;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.wileyedge.flooringmastery.dto.Order;
 import com.wileyedge.flooringmastery.dto.ProductType;
+import com.wileyedge.flooringmastery.dto.StateAbbrev;
 import com.wileyedge.flooringmastery.utilities.IUserIO;
 
 
@@ -42,89 +44,63 @@ public class OrderView {
         io.print("ERROR: " + error);
     }
 
-//    public void displayAllBooks(List<Book> books) {
-//        io.print("");
-//        io.print("All Books");
-//        books.stream()
-//                .forEach((b) -> io.print(b.getTitle() + " - " + b.getAuthor()));
-//    }
-//
-//    public String getBookTitle() {
-//        io.print("");
-//        return io.readString("Enter book name:");
-//    }
-//
-//    public void displayBookDetails(Book book) {        
-//        io.print("");
-//        io.print("Title: " + book.getTitle());
-//        io.print("Author: " + book.getAuthor());
-//        io.print("Year: " + book.getYear());
-//        io.print("Genre: " + book.getGenre());
-//    }
-//
     public Order getNewOrder() {
     	Order order = null;
-    	System.out.println("Enter new order info");
+    	io.print("Enter new order info");
     	try {
     		LocalDate orderDate = io.getInputAsFutureDate("Order Date","Enter order date (dd/mm/yyy) : ");
     		String customerName = io.getInputAsString("Customer name","Enter customer name : ");
-    		String state = io.getInputAsString("State","Enter state abbreveation : ").toUpperCase();
+    		StateAbbrev stateAbbrev = io.getInputAsState("State","Enter state abbreveation : ");
     		ProductType productType = io.getInputAsProductType("Product type","Please enter product type : "); 
     		BigDecimal area = io.getInputAsPositiveBigDecimal("Area size", "Please enter size of the area: ");
-    		System.out.println("Finished getting all input. Now start calculation.");
-    		order = new Order(orderDate,customerName,state,productType,area);
-    		
-    		System.out.println("Here below the order details : ");
-    		String placeOrder = io.getInputAsStringYN("Would you like to place this order ? Y/N : ");
-    		if(placeOrder.equalsIgnoreCase("N")) {
-    			order = null;
-    		}
+    		io.print("Finished getting all input. Now wrapping input info into object to return to service layer.");
+    		order = new Order(orderDate,customerName,stateAbbrev,productType,area);
     	}catch(Exception e) {
-    		System.out.println("Ooop! something went wrong! Please try again later. bye!");
+    		order = null;
+    		io.print("Ooop! something went wrong in getNewOrder() --View Layer !");
     	}
         return order;
     }
 
-//    public void displayAddSuccess() {
-//        io.print("Book added successfully");
-//    }
-//
     public void displayExit() {
         io.print("Existing Master Flooring Order App ...");
     }
-//
-//    public String getBookTitleToDelete() {
-//        io.print("");
-//        return io.readString("Enter book name to delete:");
-//    }
-//
-//    public void displayDeleteSuccess() {
-//        io.print("Book deleted successfully");
-//    }
-//
-//    public String getBookTitleToUpdate() {
-//        io.print("");
-//        return io.readString("Enter book name to update:");    }
-//
-//    public Book getUpdateBook(Book updateBook) {
-//        io.print("Updating " + updateBook.getTitle());
-//        String author = io.readString("Enter Author (" + updateBook.getAuthor() + "):");
-//        String year = io.readString("Enter Year (" + updateBook.getYear() + "):");
-//        String genre = io.readString("Enter Genre (" + updateBook.getGenre() + "):");
-//        if(!author.isBlank()) {
-//            updateBook.setAuthor(author);
-//        }
-//        if(!year.isBlank()) {
-//            updateBook.setYear(Integer.parseInt(year));
-//        }
-//        if(!genre.isBlank()) {
-//            updateBook.setGenre(genre);
-//        }
-//        return updateBook;
-//    }
+    
+    public void displayAddedSuccess(Order order){
+    	io.print("Below order has been added successfully.");
+    	io.print(order.toString());
+    }
+    
+    public void displayAllOrders(Map<Integer,Order> orderMap) {
+    	if(orderMap == null) {
+    		io.print("No order to display.");
+    		return;
+    	}
+    	io.print("-------------ORDER LIST-------------");
+    	for(Order order:orderMap.values()) {
+    		io.print(order.toString());
+    	}
+    }
 
     public void displayUpdateSuccess() {
         io.print("Order updated successfully");
+    }
+    
+    public boolean confirmOrder(Order order) {
+    	io.print("Based on info provided, here's the summary of all the cost involved : ");
+    	io.print("-------ORDER SUMMARY------");
+    	io.print("Material cost : " + order.getMaterialCost());
+    	io.print("Labor cost : " + order.getLaborCost());
+    	io.print("Tax : " + order.getTax());
+    	io.print("Total cost (tax inclusive) : " + order.getTax());
+    	io.print("--------------------------");
+    	String input =io.getInputAsStringYN("Would you like to place the order Y/N : ");
+    	if(input.equalsIgnoreCase("Y")) {
+    		return true;
+    	}else {
+    		io.print("Darft order cancelled successfully.");
+    		return false;
+    	}
     }
 
 }

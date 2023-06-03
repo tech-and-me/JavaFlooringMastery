@@ -1,5 +1,7 @@
 package com.wileyedge.flooringmastery.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,14 +32,20 @@ public class OrderController {
 			int choice = view.displayMenuAndGetChoice();
 			switch(choice) {
 			case 1: //Display Orders
-				System.out.println("Display orders...");
+				Map<Integer,Order> orderMap = service.getAllOrders();
+				view.displayAllOrders(orderMap);
 				break;
 			case 2: // Add an Order
-				System.out.println("Add an order ...");
 				Order order = view.getNewOrder();
 				if(order!= null) {
-					int orderId = service.addNewOrder(order);
-					System.out.println("Order is placed. Here's the order Id : " + orderId);
+					service.caculateTotalOrderCostAndTax(order);
+					boolean confirmOrder = view.confirmOrder(order);
+					if(confirmOrder) {
+						service.placeOrder(order);
+						view.displayAddedSuccess(order);
+					}else {
+						service.cancelDraftOrder(order);
+					}
 				}
 				break;
 			case 3: // Edit an Order
