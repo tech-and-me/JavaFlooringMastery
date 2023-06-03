@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -130,14 +131,15 @@ public class ServiceImpl implements IService {
 	}
 
 	@Override
-	public void caculateTotalOrderCostAndTax(Order order) {
+	public void setCalculatedOrderCostAndTax(Order order) {
 		this.setCostPerSquareFoot(order);
-		this.calculateMaterialCost(order);
-		this.calculateLaborCost(order);
-		this.calculateTax(order);
-		this.calculateTotal(order);
+		this.setCalculatedMaterialCost(order);
+		this.setCalculatedLaborCost(order);
+		this.setCalculatedTax(order);
+		this.setCalculatedTotal(order);
 	}
 
+	
 	@Override
 	public void setCostPerSquareFoot(Order order) {
 		ProductType productType = order.getProductType();
@@ -146,7 +148,7 @@ public class ServiceImpl implements IService {
 	}
 
 	@Override
-	public void calculateLaborCost(Order order) {
+	public void setCalculatedLaborCost(Order order) {
 		ProductType productType = order.getProductType();
 	
 		//Extract labor cost per square foot from productMap
@@ -163,7 +165,7 @@ public class ServiceImpl implements IService {
 	}
 
 	@Override
-	public void calculateMaterialCost(Order order) {
+	public void setCalculatedMaterialCost(Order order) {
 		//Extract product type from the order
 		ProductType productType = order.getProductType();
 		
@@ -178,7 +180,7 @@ public class ServiceImpl implements IService {
 	}
 
 	@Override
-	public void calculateTax(Order order) {
+	public void setCalculatedTax(Order order) {
 		BigDecimal totalCost = order.getMaterialCost().add(order.getLaborCost());
 		StateAbbrev stateAbbrev = order.getStateAbbrev();
 		
@@ -195,7 +197,7 @@ public class ServiceImpl implements IService {
 	}
 	
 	@Override
-	public void calculateTotal(Order order) {
+	public void setCalculatedTotal(Order order) {
 		BigDecimal total = order.getMaterialCost().add(order.getLaborCost()).add(order.getTax());
 		order.setTotal(total);
 	}
@@ -242,16 +244,52 @@ public class ServiceImpl implements IService {
 	}
 
 	@Override
-	public void editOrder(Order order) {
-		int orderId = order.getOrderNumber();
-		if (orderMap.containsKey(orderId)) {
-			orderMap.put(orderId, order);
-			System.out.println("Order edited successfully.");
-		} else {
-			System.out.println("Order not found. Edit failed.");
-		}
-
+	public void editOrder(Order draftUpdatedOrder) {
+		int orderId = draftUpdatedOrder.getOrderNumber();
+		Order existingOrder = orderMap.get(orderId);
+		
+		//get existing order info to passing to draft order info to show to user
+		String updatedName = draftUpdatedOrder.getCustomerName();
+		ProductType updatedType = draftUpdatedOrder.getProductType();
+		StateAbbrev updatedStateAbbrev = draftUpdatedOrder.getStateAbbrev();
+		BigDecimal updatedArea = draftUpdatedOrder.getArea();
+		
+		//Update draft update order to the existing ones if it is null or empty
+		if (updatedName == null || updatedName.trim().isEmpty()){
+	        draftUpdatedOrder.setCustomerName(existingOrder.getCustomerName());
+	    }
+	    
+	    if (updatedType == null) {
+	        draftUpdatedOrder.setProductType(existingOrder.getProductType());
+	    }
+	    
+	    if (updatedStateAbbrev == null) {
+	    	draftUpdatedOrder.setStateAbbrev(existingOrder.getStateAbbrev());
+	    }
+	    
+	    if (updatedArea == null || updatedArea.compareTo(BigDecimal.ZERO) == 0) {
+	    	draftUpdatedOrder.setArea(existingOrder.getArea());
+	    }
+	    
+	    //Updated calculated properties of draftUpdatedOrder
+	    this.setCalculatedOrderCostAndTax(draftUpdatedOrder);
+	    
 	}
+	
+	@Override
+	public Order saveUpdatedOrder(Order existingOrder, Order draftUpdatedOrder) {
+	    try {
+	        // Update the order in the orderMap
+	        orderMap.put(draftUpdatedOrder.getOrderNumber(), draftUpdatedOrder);
+	        
+	        // Set existingOrder to null
+	        return null;
+	    } catch (Exception e) {
+	        System.out.println("Something went wrong while copying object properties.");
+	        return existingOrder;
+	    }
+	}
+
 
 	@Override
 	public void removeOrder(int orderId) {

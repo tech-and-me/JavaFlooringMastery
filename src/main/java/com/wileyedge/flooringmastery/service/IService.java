@@ -11,18 +11,19 @@ public interface IService {
 	void loadProductFile();
 	void loadOrderFile();
 	void saveOrderToFile();
-	void caculateTotalOrderCostAndTax(Order order);
+	void setCalculatedOrderCostAndTax(Order order);
 	void placeOrder(Order order);
 	void displayOrders();
 	void editOrder(Order order);
 	void removeOrder(int orderId);
 	void exportAllData();
-	void calculateMaterialCost(Order order);
-	void calculateLaborCost(Order order);
-	void calculateTax(Order order);
-	void calculateTotal(Order order);
+	void setCalculatedMaterialCost(Order order);
+	void setCalculatedLaborCost(Order order);
+	void setCalculatedTax(Order order);
+	void setCalculatedTotal(Order order);
 	void setCostPerSquareFoot(Order order);
 	Map<Integer, Order> getAllOrders();
 	void cancelDraftOrder(Order draftOrder);
 	Order getExistingOrder(LocalDate orderDate, int orderNumber);
+	Order saveUpdatedOrder(Order existingOrder, Order draftUpdatedOrder);
 }

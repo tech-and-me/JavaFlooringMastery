@@ -57,7 +57,6 @@ public class OrderView {
     		StateAbbrev stateAbbrev = io.getInputAsState("State","Enter state abbreveation : ");
     		ProductType productType = io.getInputAsProductType("Product type","Please enter product type : "); 
     		BigDecimal area = io.getInputAsPositiveBigDecimal("Area size", "Please enter size of the area: ");
-    		io.print("Finished getting all input. Now wrapping input info into object to return to service layer.");
     		order = new Order(orderDate,customerName,stateAbbrev,productType,area);
     	}catch(Exception e) {
     		order = null;
@@ -65,6 +64,26 @@ public class OrderView {
     	}
         return order;
     }
+    
+    
+    public Order getDraftUpdatedOrder(Order order) {
+    	Order draftUpdatedOrder =  null;
+    	io.print("Enter updated order info");
+    	try {
+    		String customerName = io.getInputAsString("Customer name", "Enter customer name (" + order.getCustomerName() + "):");
+    		StateAbbrev stateAbbrev = io.getInputAsState("State", "Enter state abbreviation (" + order.getStateAbbrev() + "):");
+    		ProductType productType = io.getInputAsProductType("Product type", "Enter product type (" + order.getProductType() + "):");
+    		BigDecimal area = io.getInputAsPositiveBigDecimal("Area size", "Enter area size (" + order.getArea() + "):");
+    		
+    		// send the above 4 input to controller
+    		draftUpdatedOrder = new Order(order.getOrderNumber(),order.getOrderDate(),customerName,stateAbbrev,productType,area);
+    	}catch(Exception e) {
+    		draftUpdatedOrder = null;
+    		io.print("Ooop! something went wrong in getNewOrder() --View Layer !");
+    	}
+        return draftUpdatedOrder;
+    }
+    
     
     public LocalDate getOrderDate() {
     	LocalDate orderDate = null;
@@ -111,18 +130,21 @@ public class OrderView {
     }
     
     public boolean confirmOrder(Order order) {
-    	io.print("Based on info provided, here's the summary of all the cost involved : ");
     	io.print("-------ORDER SUMMARY------");
+    	io.print("Customer name: " + order.getCustomerName() );
+    	io.print("State" + order.getStateAbbrev());
+    	io.print("Product type: " + order.getProductType() );
+    	io.print("Area: " + order.getArea());
     	io.print("Material cost : " + order.getMaterialCost());
     	io.print("Labor cost : " + order.getLaborCost());
     	io.print("Tax : " + order.getTax());
     	io.print("Total cost (tax inclusive) : " + order.getTax());
     	io.print("--------------------------");
-    	String input =io.getInputAsStringYN("Would you like to place the order Y/N : ");
+    	String input =io.getInputAsStringYN("Would you like to place/update the order Y/N : ");
     	if(input.equalsIgnoreCase("Y")) {
     		return true;
     	}else {
-    		io.print("Draft order cancelled successfully.");
+    		io.print("Transaction abort : no further action taken for this order.");
     		return false;
     	}
     }

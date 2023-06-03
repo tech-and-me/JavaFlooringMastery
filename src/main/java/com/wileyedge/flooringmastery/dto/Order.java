@@ -21,7 +21,18 @@ public class Order {
 	
 	private static int lastOrderId = 0;
 	
+	
+	public Order(int orderNumber,LocalDate orderDate,String customerName, StateAbbrev stateAbbrev, ProductType productType, BigDecimal area) {
+		super();
+		this.orderNumber = orderNumber;
+		this.customerName = customerName;
+		this.stateAbbrev = stateAbbrev;
+		this.productType = productType;
+		this.area = area;
+	}
+
 	public Order(LocalDate orderDate, String customerName, StateAbbrev state, ProductType productType, BigDecimal area) {
+		this.orderDate = orderDate;
 		this.orderDate = orderDate;
 		this.customerName = customerName;
 		this.stateAbbrev = state;
