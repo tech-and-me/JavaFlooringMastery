@@ -77,6 +77,7 @@ public class OrderView {
     		
     		// send the above 4 input to controller
     		draftUpdatedOrder = new Order(order.getOrderNumber(),order.getOrderDate(),customerName,stateAbbrev,productType,area);
+    		System.out.println("ORDER IN DARFT VIEW --" + order);
     	}catch(Exception e) {
     		draftUpdatedOrder = null;
     		io.print("Ooop! something went wrong in getNewOrder() --View Layer !");

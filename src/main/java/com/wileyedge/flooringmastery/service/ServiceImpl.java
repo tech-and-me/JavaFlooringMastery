@@ -303,8 +303,7 @@ public class ServiceImpl implements IService {
 
 	@Override
 	public void exportAllData() {
-		// TODO Auto-generated method stub
-
+		dao.writeOrdersToFile(orderMap);
 	}
 
 	@Override

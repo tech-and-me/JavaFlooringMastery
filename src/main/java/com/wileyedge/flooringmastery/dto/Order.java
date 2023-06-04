@@ -18,19 +18,10 @@ public class Order {
 	private BigDecimal laborCost;
 	private BigDecimal tax;
 	private BigDecimal total;
-	
-	private static int lastOrderId = 0;
-	
-	
-	public Order(int orderNumber,LocalDate orderDate,String customerName, StateAbbrev stateAbbrev, ProductType productType, BigDecimal area) {
-		super();
-		this.orderNumber = orderNumber;
-		this.customerName = customerName;
-		this.stateAbbrev = stateAbbrev;
-		this.productType = productType;
-		this.area = area;
-	}
 
+	private static int lastOrderId = 0;
+
+	// used when create new order
 	public Order(LocalDate orderDate, String customerName, StateAbbrev state, ProductType productType, BigDecimal area) {
 		this.orderDate = orderDate;
 		this.orderDate = orderDate;
@@ -39,6 +30,37 @@ public class Order {
 		this.productType = productType;
 		this.area = area;
 	}
+
+	//used when updated order
+	public Order(int orderNumber, LocalDate orderDate, String customerName, StateAbbrev stateAbbrev,ProductType productType, BigDecimal area) {
+		super();
+		this.orderNumber = orderNumber;
+		this.orderDate = orderDate;
+		this.customerName = customerName;
+		this.stateAbbrev = stateAbbrev;
+		this.productType = productType;
+		this.area = area;
+	}
+
+	//used when read from file
+	public Order(int orderNumber,String customerName,StateAbbrev stateAbbrev,BigDecimal taxRate,ProductType productType,BigDecimal area,
+			BigDecimal costPerSquareFoot,BigDecimal laborCostPerSquareFoot, BigDecimal materialCost,BigDecimal laborCost, 
+			BigDecimal tax, BigDecimal total,LocalDate orderDate) {
+		this.orderNumber = orderNumber;
+		this.orderDate = orderDate;
+		this.customerName = customerName;
+		this.stateAbbrev = stateAbbrev;
+		this.taxRate = taxRate;
+		this.productType = productType;
+		this.area = area;
+		this.costPerSquareFoot = costPerSquareFoot;
+		this.laborCostPerSquareFoot = laborCostPerSquareFoot;
+		this.materialCost = materialCost;
+		this.laborCost = laborCost;
+		this.tax = tax;
+		this.total = total;
+	}
+	
 	
 	public static int getLastOrderId() {
 		return lastOrderId;
@@ -53,11 +75,9 @@ public class Order {
 	}
 
 
-
 	public void setOrderDate(LocalDate orderDate) {
 		this.orderDate = orderDate;
 	}
-
 
 
 	public int getOrderNumber() {
@@ -163,8 +183,8 @@ public class Order {
 				+ laborCost + ", tax=" + tax + ", total=" + total + "]";
 	}
 
-	
-	
-	
-	
+
+
+
+
 }

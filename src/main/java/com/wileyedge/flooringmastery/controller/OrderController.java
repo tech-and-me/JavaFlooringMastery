@@ -92,6 +92,7 @@ public class OrderController {
 				break;
 			case 5: // Export All Data
 				System.out.println("Export all data...");
+				service.exportAllData();
 				break;
 			case 6: // Quit
 				view.displayExit();
@@ -99,6 +100,7 @@ public class OrderController {
 				break;
 			case 7: // Backup Data to a Backup folder
 				System.out.println("Export all data to a backup folder.");
+//				service.exportAllData();
 				break;
 			default: //unknown
 				view.displayError("Unknown Option");
