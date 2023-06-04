@@ -13,8 +13,8 @@ public interface IService {
 	void saveOrderToFile();
 	void setCalculatedOrderCostAndTax(Order order);
 	void placeOrder(Order order);
-	void displayOrders();
-	void editOrder(Order order);
+//	void displayOrders();
+	void editDraftUpdatedOrder(Order order);
 	void removeOrder(int orderId);
 	void exportAllData();
 	void setCalculatedMaterialCost(Order order);
@@ -25,5 +25,5 @@ public interface IService {
 	Map<Integer, Order> getAllOrders();
 	void cancelDraftOrder(Order draftOrder);
 	Order getExistingOrder(LocalDate orderDate, int orderNumber);
-	Order saveUpdatedOrder(Order existingOrder, Order draftUpdatedOrder);
+	Order saveDraftUpdatedOrder(Order existingOrder, Order draftUpdatedOrder);
 }

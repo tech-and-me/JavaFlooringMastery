@@ -54,44 +54,30 @@ public class OrderDAOImpl implements IOrderDAO {
 
 
 				// Parse the values and create an Order object
-				System.out.println(values[0]);
 				int orderNumber = Integer.parseInt(values[0]);
-				System.out.println(values[1]);
 				String customerName = values[1];
-				System.out.println(values[2]);
 				StateAbbrev stateAbbrev = StateAbbrev.valueOf(values[2]);
-				System.out.println(values[3]);
 				BigDecimal taxRate = new BigDecimal(values[3]);
-				System.out.println(values[4]);
 				ProductType productType = ProductType.valueOf(values[4]);
-				System.out.println(values[5]);
 				BigDecimal area = new BigDecimal(values[5]);
-				System.out.println(values[6]);
 				BigDecimal costPerSquareFoot = new BigDecimal(values[6]);
-				System.out.println(values[7]);
 				BigDecimal laborCostPerSquareFoot = new BigDecimal(values[7]);
-				System.out.println(values[8]);
 				BigDecimal materialCost = new BigDecimal(values[8]);
-				System.out.println(values[9]);
 				BigDecimal laborCost = new BigDecimal(values[9]);
-				System.out.println(values[10]);
 				BigDecimal tax = new BigDecimal(values[10]);
-				System.out.println(values[11]);
 				BigDecimal total = new BigDecimal(values[11]);
-				System.out.println(values[12]);
-				System.out.println("value[12] : " + values[12]);
+				
 				//Parse date to correct format
 				DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 	            LocalDate orderDate = LocalDate.parse(values[12], dateFormatter);
 
 				Order order = new Order(orderNumber, customerName, stateAbbrev, taxRate, productType, area,
 						costPerSquareFoot, laborCostPerSquareFoot, materialCost, laborCost, tax, total, orderDate);
-				System.out.println(order);
 				orderMap.put(orderNumber, order);
 			}
 			//Update last order id to the max id so that the next new order will continue from the max of loaded order id
 			updateLastOrderId(orderMap);
-			System.out.println("File read successfully.");
+			System.out.println("Order file loaded successfully.");
 		} catch(NumberFormatException e) {
 			System.out.println("Error parsing decimal value in line: " + line);
 		} catch (FileNotFoundException e) {
@@ -107,7 +93,7 @@ public class OrderDAOImpl implements IOrderDAO {
 				System.out.println("Error closing file: " + e.getMessage());
 			}
 		}
-
+		
 		return orderMap;
 	}
 

@@ -21,5 +21,14 @@ public interface IUserIO {
 	BigDecimal getInputAsPositiveBigDecimal(String varName, String prompt);
 	ProductType getInputAsProductType(String varName,String prompt);
 	StateAbbrev getInputAsState(String varName,String prompt);
+//	int getInputAsIntegerWithMinLimit(String varName, String prompt, int min);
+	int getInputAsIntegerWithMinAndMaxLimit(String varName, String prompt, int min, int max);
+	BigDecimal getInputAsBigDecimalWithMinLimit(String string, String string2, BigDecimal bigDecimal);
+	String getInputAsName(String varName, String prompt);
+	String getInputAsOptionalName(String string, String string2);
+	ProductType getInputAsOptionalProductType(String varName, String prompt);
+	StateAbbrev getInputAsOptionalState(String varName, String prompt);
+	BigDecimal getInputAsOptionalBigDecimalWithMinLimit(String varName, String prompt, BigDecimal min);
+	
     
 }

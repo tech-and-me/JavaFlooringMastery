@@ -2,7 +2,7 @@ package com.wileyedge.flooringmastery.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 public class Order {
 	private int orderNumber;
@@ -178,12 +178,13 @@ public class Order {
 
 	@Override
 	public String toString() {
-		return "Order [orderNumber=" + orderNumber + ", orderDate=" + orderDate + ", customerName=" + customerName
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String formattedDate = orderDate.format(formatter);
+
+		return "Order [orderNumber=" + orderNumber + ", orderDate=" + formattedDate + ", customerName=" + customerName
 				+ ", productType=" + productType + ", area=" + area + ", materialCost=" + materialCost + ", laborCost="
 				+ laborCost + ", tax=" + tax + ", total=" + total + "]";
 	}
-
-
 
 
 

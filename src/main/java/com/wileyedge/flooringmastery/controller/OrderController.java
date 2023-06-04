@@ -44,7 +44,7 @@ public class OrderController {
 				order = view.getNewOrder();
 				if(order!= null) {
 					service.setCalculatedOrderCostAndTax(order);
-					boolean confirmOrder = view.confirmOrder(order);
+					boolean confirmOrder = view.confirmNewOrder(order);
 					if(confirmOrder) {
 						service.placeOrder(order);
 						view.displayAddedSuccess(order);
@@ -63,11 +63,11 @@ public class OrderController {
 						Order draftUpdatedOrder = view.getDraftUpdatedOrder(existingOrder);
 
 						//Send update detail to service layer to set remaining properties (cost, tax etc)
-						service.editOrder(draftUpdatedOrder);
+						service.editDraftUpdatedOrder(draftUpdatedOrder);
 						
 						//Confirm update
-						if(view.confirmOrder(draftUpdatedOrder)) {
-							existingOrder = service.saveUpdatedOrder(existingOrder, draftUpdatedOrder);
+						if(view.confirmUpdatedOrder(draftUpdatedOrder)) {
+							existingOrder = service.saveDraftUpdatedOrder(existingOrder, draftUpdatedOrder);
 						}
 					}else {
 						view.displayTransactionFailed("order not found !");
@@ -98,12 +98,13 @@ public class OrderController {
 				view.displayExit();
 				System.exit(0);
 				break;
-			case 7: // Backup Data to a Backup folder
-				System.out.println("Export all data to a backup folder.");
-//				service.exportAllData();
-				break;
+//			case 7: // Backup Data to a Backup folder
+//				System.out.println("Export all data to a backup folder.");
+////				service.exportAllData();
+//				break;
 			default: //unknown
 				view.displayError("Unknown Option");
+				break;
 			}
 		}
 	}

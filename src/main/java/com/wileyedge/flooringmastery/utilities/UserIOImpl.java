@@ -46,9 +46,8 @@ public class UserIOImpl implements IUserIO {
 		return input;
 	}
 
-
 	@Override
-	public int getInputAsInteger(String varName, String prompt, int min, int max) {
+	public int getInputAsIntegerWithMinAndMaxLimit(String varName, String prompt, int min, int max) {
 		int input = 0;
 		boolean validInput = false;
 
@@ -138,6 +137,60 @@ public class UserIOImpl implements IUserIO {
 
 		return input;
 	}
+	
+	
+	@Override
+	public String getInputAsName(String varName, String prompt) {
+	    boolean validInput = false;
+	    String input = "";
+
+	    do {
+	        try {
+	            System.out.println(prompt);
+	            input = scanner.nextLine();
+
+	            if (input.matches("[a-zA-Z0-9,.-]+") && input.length() >= 2) {
+	                validInput = true;
+	            } else {
+	                System.out.println("Invalid input. Name can only contain letters, numbers, periods, commas, and be at least 2 characters long.");
+	            }
+	        } catch (Exception e) {
+	            System.out.println("Oops! Something went wrong.");
+	            System.out.println(e.getMessage());
+	        }
+	    } while (!validInput);
+
+	    return input;
+	}
+	
+	
+	
+	public String getInputAsOptionalName(String varName, String prompt) {
+	    boolean validInput = false;
+	    String input = "";
+
+	    do {
+	        try {
+	            System.out.println(prompt);
+	            input = scanner.nextLine();
+
+	            if (input.isEmpty() || (input.matches("[a-zA-Z0-9,.-]+") && input.length() >= 2)) {
+	                validInput = true;
+	            } else {
+	                System.out.println("Invalid input. Name must contain letters, numbers, periods, commas, and be at least 2 characters long, or it can be blank.");
+	            }
+	        } catch (Exception e) {
+	            System.out.println("Oops! Something went wrong.");
+	            System.out.println(e.getMessage());
+	        }
+	    } while (!validInput);
+
+	    return input;
+	}
+
+	
+	
+
 
 	@Override
 	public BigDecimal getInputAsBigDecimal(String varName, String prompt) {
@@ -189,6 +242,11 @@ public class UserIOImpl implements IUserIO {
 		return input;
 	}
 
+	
+
+	
+	
+	
 	@Override
 	public LocalDate getInputAsDate(String varName, String prompt) {
 		boolean validInput = false;
@@ -269,6 +327,39 @@ public class UserIOImpl implements IUserIO {
 
 		return productType;
 	}
+	
+	@Override
+	public ProductType getInputAsOptionalProductType(String varName, String prompt) {
+	    boolean validInput = false;
+	    ProductType productType = null;
+
+	    do {
+	        try {
+	            System.out.println(prompt);
+	            String input = scanner.nextLine().toUpperCase();
+
+	            if (input.isEmpty()) {
+	                validInput = true;
+	            } else {
+	                productType = ProductType.valueOf(input);
+	                validInput = true;
+	            }
+	        } catch (IllegalArgumentException e) {
+	            System.out.println("Invalid " + varName + "! Please choose from the following product types:");
+
+	            // Display the list of correct product types
+	            for (ProductType type : ProductType.values()) {
+	                System.out.println(type.name());
+	            }
+	        } catch (Exception e) {
+	            System.out.println("Oops! Something went wrong.");
+	            System.out.println(e.getMessage());
+	        }
+	    } while (!validInput);
+
+	    return productType;
+	}
+
 
 
 	@Override
@@ -315,6 +406,115 @@ public class UserIOImpl implements IUserIO {
 
 		return stateAbbrev;
 	}
+	
+	
+	@Override
+	public StateAbbrev getInputAsOptionalState(String varName, String prompt) {
+	    boolean validInput = false;
+	    StateAbbrev stateAbbrev = null;
+
+	    do {
+	        try {
+	            System.out.println(prompt);
+	            String input = scanner.nextLine().toUpperCase();
+
+	            if (input.isEmpty()) {
+	                validInput = true;
+	            } else {
+	                stateAbbrev = StateAbbrev.valueOf(input);
+	                validInput = true;
+	            }
+	        } catch (IllegalArgumentException e) {
+	            System.out.println("Invalid " + varName + "! Please choose from the following states:");
+
+	            // Display the list of correct states
+	            for (StateAbbrev state : StateAbbrev.values()) {
+	                System.out.println(state);
+	            }
+	        }
+	    }while(!validInput);
+	    
+	    return stateAbbrev;
+	}
+	
+
+	
+	
+	
+	
+	
+	
+	
+
+	@Override
+	public int getInputAsInteger(String varName, String prompt, int min, int max) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override	
+	public BigDecimal getInputAsBigDecimalWithMinLimit(String varName, String prompt, BigDecimal min) {
+	    BigDecimal input = null;
+	    boolean validInput = false;
+
+	    do {
+	        try {
+	            System.out.println(prompt);
+	            String inputString = scanner.nextLine();
+	            input = new BigDecimal(inputString);
+
+	            if (input.compareTo(min) >= 0) {
+	                validInput = true;
+	            } else {
+	                System.out.println(varName + " must be at least " + min + " sq ft.");
+	            }
+	        } catch (NumberFormatException e) {
+	            System.out.println(varName + " must be a valid decimal number.");
+	        } catch (Exception e) {
+	            System.out.println("Oops! Something went wrong. ");
+	            return null;
+	        }
+
+	    } while (!validInput);
+
+	    return input;
+	}
+	
+	
+	@Override
+	public BigDecimal getInputAsOptionalBigDecimalWithMinLimit(String varName, String prompt, BigDecimal min) {
+	    BigDecimal input = null;
+	    boolean validInput = false;
+
+	    do {
+	        try {
+	            System.out.println(prompt);
+	            String inputString = scanner.nextLine();
+
+	            if (inputString.isEmpty()) {
+	                validInput = true;
+	            } else {
+	                input = new BigDecimal(inputString);
+
+	                if (input.compareTo(min) >= 0) {
+	                    validInput = true;
+	                } else {
+	                    System.out.println(varName + " must be at least " + min + " sq ft.");
+	                }
+	            }
+	        } catch (NumberFormatException e) {
+	            System.out.println(varName + " must be a valid decimal number.");
+	        } catch (Exception e) {
+	            System.out.println("Oops! Something went wrong. ");
+	            return null;
+	        }
+
+	    } while (!validInput);
+
+	    return input;
+	}
+
+
 
 
 }

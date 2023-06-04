@@ -28,16 +28,19 @@ public class OrderView {
     }
 
     public int displayMenuAndGetChoice() {
-        io.print("");
-        io.print("Main Menu");
-        io.print("1. Display Orders");
-        io.print("2. Add an Order");
-        io.print("3. Edit an Order");
-        io.print("4. Remove an Order");
-        io.print("5. Export All Data");
-        io.print("6. Quit");
+    	io.print("\n");
+        io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* <<Flooring Program>>");
+        io.print("* 1. Display Orders");
+        io.print("* 2. Add an Order");
+        io.print("* 3. Edit an Order");
+        io.print("* 4. Remove an Order");
+        io.print("* 5. Export All Data");
+        io.print("* 6. Quit");
+        io.print("*");
+        io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         
-        return io.getInputAsInteger("Option","Please select an option:", 1, 6);
+        return io.getInputAsIntegerWithMinAndMaxLimit("Option","Please select an option:", 1, 6);
     }
 
     public void displayError(String error) {
@@ -53,10 +56,10 @@ public class OrderView {
     	io.print("Enter new order info");
     	try {
     		LocalDate orderDate = io.getInputAsFutureDate("Order date","Enter order date (dd/mm/yyy) : ");
-    		String customerName = io.getInputAsString("Customer name","Enter customer name : ");
+    		String customerName = io.getInputAsName("Customer name","Enter customer name : ");
     		StateAbbrev stateAbbrev = io.getInputAsState("State","Enter state abbreveation : ");
     		ProductType productType = io.getInputAsProductType("Product type","Please enter product type : "); 
-    		BigDecimal area = io.getInputAsPositiveBigDecimal("Area size", "Please enter size of the area: ");
+    		BigDecimal area = io.getInputAsBigDecimalWithMinLimit("Area size", "Please enter size of the area: ",new BigDecimal("100"));
     		order = new Order(orderDate,customerName,stateAbbrev,productType,area);
     	}catch(Exception e) {
     		order = null;
@@ -70,14 +73,13 @@ public class OrderView {
     	Order draftUpdatedOrder =  null;
     	io.print("Enter updated order info");
     	try {
-    		String customerName = io.getInputAsString("Customer name", "Enter customer name (" + order.getCustomerName() + "):");
-    		StateAbbrev stateAbbrev = io.getInputAsState("State", "Enter state abbreviation (" + order.getStateAbbrev() + "):");
-    		ProductType productType = io.getInputAsProductType("Product type", "Enter product type (" + order.getProductType() + "):");
-    		BigDecimal area = io.getInputAsPositiveBigDecimal("Area size", "Enter area size (" + order.getArea() + "):");
+    		String customerName = io.getInputAsOptionalName("Customer name", "Enter customer name (" + order.getCustomerName() + "):");
+    		StateAbbrev stateAbbrev = io.getInputAsOptionalState("State", "Enter state abbreviation (" + order.getStateAbbrev() + "):");
+    		ProductType productType = io.getInputAsOptionalProductType("Product type", "Enter product type (" + order.getProductType() + "):");
+    		BigDecimal area = io.getInputAsOptionalBigDecimalWithMinLimit("Area size", "Enter product type (" + order.getArea() + " sqr ft.):",new BigDecimal("100"));
     		
     		// send the above 4 input to controller
     		draftUpdatedOrder = new Order(order.getOrderNumber(),order.getOrderDate(),customerName,stateAbbrev,productType,area);
-    		System.out.println("ORDER IN DARFT VIEW --" + order);
     	}catch(Exception e) {
     		draftUpdatedOrder = null;
     		io.print("Ooop! something went wrong in getNewOrder() --View Layer !");
@@ -130,7 +132,7 @@ public class OrderView {
         io.print("Order updated successfully");
     }
     
-    public boolean confirmOrder(Order order) {
+    public void displayOrderDetails(Order order) {
     	io.print("-------ORDER SUMMARY------");
     	io.print("Customer name: " + order.getCustomerName() );
     	io.print("State" + order.getStateAbbrev());
@@ -141,7 +143,23 @@ public class OrderView {
     	io.print("Tax : " + order.getTax());
     	io.print("Total cost (tax inclusive) : " + order.getTax());
     	io.print("--------------------------");
-    	String input =io.getInputAsStringYN("Would you like to place/update the order Y/N : ");
+    }
+    
+    
+    public boolean confirmNewOrder(Order order) {
+    	displayOrderDetails(order);
+    	String input =io.getInputAsStringYN("Would you like to place the order Y/N : ");
+    	if(input.equalsIgnoreCase("Y")) {
+    		return true;
+    	}else {
+    		io.print("Transaction abort : no further action taken for this order.");
+    		return false;
+    	}
+    }
+    
+    public boolean confirmUpdatedOrder(Order order) {
+    	displayOrderDetails(order);
+    	String input =io.getInputAsStringYN("Would you like to update this order Y/N : ");
     	if(input.equalsIgnoreCase("Y")) {
     		return true;
     	}else {

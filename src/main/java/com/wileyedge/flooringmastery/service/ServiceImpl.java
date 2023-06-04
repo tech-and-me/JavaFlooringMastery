@@ -2,6 +2,7 @@ package com.wileyedge.flooringmastery.service;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -39,12 +40,19 @@ public class ServiceImpl implements IService {
 		this.product = product;
 	}
 
+
 	@Override
 	public void loadTaxFile() {
-		try (BufferedReader reader = new BufferedReader(new FileReader(taxFileName))) {
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
+			fr = new FileReader(taxFileName);
+			br = new BufferedReader(fr);
+
 			String line;
+
 			boolean isFirstLine = true;
-			while ((line = reader.readLine()) != null) {
+			while ((line = br.readLine()) != null) {
 				if (isFirstLine) {
 					isFirstLine = false;
 					continue; // Skip the first line
@@ -58,26 +66,34 @@ public class ServiceImpl implements IService {
 					taxMap.put(stateAbbrev, tax);
 				}
 			}
-			
-			// Display taxMap 
-			System.out.println("Tax Map:");
-			for (Map.Entry<String, Tax> entry : taxMap.entrySet()) {
-				Tax tax = entry.getValue();
-				System.out.println("Tax Details: " + tax.toString());
-			}
-			System.out.println("-----------------------");
+
+			System.out.println("Tax list loaded successfully.");
+		} catch (FileNotFoundException e) {
+			System.out.println("Tax file not found: " + e.getMessage());
 		} catch (IOException e) {
 			System.out.println("Error reading tax file: " + e.getMessage());
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+				if (fr != null) {
+					fr.close();
+				}
+			} catch (IOException e) {
+				System.out.println("Error closing tax file: " + e.getMessage());
+			}
 		}
-
 	}
+
 
 	@Override
 	public void loadProductFile() {
-
-		try{
-			FileReader fr = new FileReader(productFileName);
-			BufferedReader reader = new BufferedReader(fr);
+		FileReader fr = null;
+		BufferedReader reader = null;
+		try {
+			fr = new FileReader(productFileName);
+			reader = new BufferedReader(fr);
 
 			String line;
 			boolean isFirstLine = true;
@@ -99,35 +115,34 @@ public class ServiceImpl implements IService {
 					productMap.put(productType, product);
 				}
 			}
-			System.out.println("Product Map:");
-			for (Map.Entry<ProductType, Product> entry : productMap.entrySet()) {
-				Product product = entry.getValue();
-				System.out.println("Product Details: " + product.toString());
-			}
-			System.out.println("-----------------------");
+			System.out.println("Product type list loaded from file successfully.");
+		} catch (FileNotFoundException e) {
+			System.out.println("Product file not found: " + e.getMessage());
 		} catch (IOException e) {
 			System.out.println("Error reading product file: " + e.getMessage());
+		} finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+				if (fr != null) {
+					fr.close();
+				}
+			} catch (IOException e) {
+				System.out.println("Error closing product file: " + e.getMessage());
+			}
 		}
 	}
 
+
 	@Override
 	public void loadOrderFile() {
-		Map<Integer, Order> ordersFromFile = dao.readOrdersFromFile();
-		if (ordersFromFile != null && !ordersFromFile.isEmpty()) {
-			this.orderMap.putAll(ordersFromFile);
-			for (Map.Entry<Integer, Order> entry : orderMap.entrySet()) {
-				System.out.println(entry.getValue());
-			}
-			System.out.println("-----------------------");
-		}else {
-			System.out.println("No orders to display.");
-		}
+		orderMap.putAll(dao.readOrdersFromFile());
 	}
 
 	@Override
 	public void saveOrderToFile() {
 		dao.writeOrdersToFile(orderMap);
-
 	}
 
 	@Override
@@ -139,7 +154,7 @@ public class ServiceImpl implements IService {
 		this.setCalculatedTotal(order);
 	}
 
-	
+
 	@Override
 	public void setCostPerSquareFoot(Order order) {
 		ProductType productType = order.getProductType();
@@ -150,16 +165,16 @@ public class ServiceImpl implements IService {
 	@Override
 	public void setCalculatedLaborCost(Order order) {
 		ProductType productType = order.getProductType();
-	
+
 		//Extract labor cost per square foot from productMap
 		BigDecimal laborCostPerSquareFoot = productMap.get(productType).getLaborCostPerSquareFoot();
-		
+
 		//set labor cost for square foot to order
 		order.setLaborCostPerSquareFoot(laborCostPerSquareFoot);
-		
+
 		//Calculate total labor cost
 		BigDecimal laborCost = order.getArea().multiply(laborCostPerSquareFoot);
-		
+
 		//set total labor cost to order
 		order.setLaborCost(laborCost);
 	}
@@ -168,13 +183,13 @@ public class ServiceImpl implements IService {
 	public void setCalculatedMaterialCost(Order order) {
 		//Extract product type from the order
 		ProductType productType = order.getProductType();
-		
+
 		//Get costPerSquareFoot from Product class according to ordered product type
 		BigDecimal costPerSquareFoot = productMap.get(productType).getCostPerSquareFoot();
-		
+
 		//Calculate material cost
 		BigDecimal materialCost = order.getArea().multiply(costPerSquareFoot);
-		
+
 		//Set material cost
 		order.setMaterialCost(materialCost);
 	}
@@ -183,25 +198,25 @@ public class ServiceImpl implements IService {
 	public void setCalculatedTax(Order order) {
 		BigDecimal totalCost = order.getMaterialCost().add(order.getLaborCost());
 		StateAbbrev stateAbbrev = order.getStateAbbrev();
-		
+
 		//extract tax rate from taxMap
 		BigDecimal taxRate = taxMap.get(stateAbbrev.name()).getTaxRate();
-		
+
 		//set tax rate of the order
 		order.setTaxRate(taxRate);
-		
+
 		BigDecimal taxRatePercentage = taxRate.divide(BigDecimal.valueOf(100));
-		
+
 		BigDecimal tax = totalCost.multiply(taxRatePercentage);
 		order.setTax(tax);
 	}
-	
+
 	@Override
 	public void setCalculatedTotal(Order order) {
 		BigDecimal total = order.getMaterialCost().add(order.getLaborCost()).add(order.getTax());
 		order.setTotal(total);
 	}
-	
+
 	@Override
 	public void placeOrder(Order order) {
 		//Generate and set order number
@@ -210,25 +225,11 @@ public class ServiceImpl implements IService {
 
 		//Add order to the list
 		orderMap.put(order.getOrderNumber(), order);
-		
+
 		//Update last order id
 		Order.setLastOrderId(newOrderId);
 	}
 
-	@Override
-	public void displayOrders() {
-		
-		if (orderMap.isEmpty()) {
-			System.out.println("No orders found.");
-		} else {
-			System.out.println("----------- ORDER LIST -----------");
-			for (Order order : orderMap.values()) {
-				System.out.println(order);
-			}
-		}
-		System.out.println("----------------------------");
-	}
-	
 	@Override 
 	public Order getExistingOrder(LocalDate orderDate,int orderNumber){
 		Order searchOrder = null;
@@ -238,56 +239,74 @@ public class ServiceImpl implements IService {
 				break;
 			}
 		}
-		
-		
+
 		return searchOrder;
 	}
 
 	@Override
-	public void editOrder(Order draftUpdatedOrder) {
+	public void editDraftUpdatedOrder(Order draftUpdatedOrder) {
+		boolean reCalculatingCostAndTax = false;
 		int orderId = draftUpdatedOrder.getOrderNumber();
 		Order existingOrder = orderMap.get(orderId);
-		
+
 		//get existing order info to passing to draft order info to show to user
 		String updatedName = draftUpdatedOrder.getCustomerName();
 		ProductType updatedType = draftUpdatedOrder.getProductType();
 		StateAbbrev updatedStateAbbrev = draftUpdatedOrder.getStateAbbrev();
 		BigDecimal updatedArea = draftUpdatedOrder.getArea();
-		
-		//Update draft update order to the existing ones if it is null or empty
+
+		// if new name is empty, set the original name to the draft one to display to the user
 		if (updatedName == null || updatedName.trim().isEmpty()){
-	        draftUpdatedOrder.setCustomerName(existingOrder.getCustomerName());
-	    }
-	    
-	    if (updatedType == null) {
-	        draftUpdatedOrder.setProductType(existingOrder.getProductType());
-	    }
-	    
-	    if (updatedStateAbbrev == null) {
-	    	draftUpdatedOrder.setStateAbbrev(existingOrder.getStateAbbrev());
-	    }
-	    
-	    if (updatedArea == null || updatedArea.compareTo(BigDecimal.ZERO) == 0) {
-	    	draftUpdatedOrder.setArea(existingOrder.getArea());
-	    }
-	    
-	    //Updated calculated properties of draftUpdatedOrder
-	    this.setCalculatedOrderCostAndTax(draftUpdatedOrder);
-	    
+			draftUpdatedOrder.setCustomerName(existingOrder.getCustomerName());
+		}
+
+		// if new type is empty, set the original type to the draft one to display to the user
+		if (updatedType == null) {
+			draftUpdatedOrder.setProductType(existingOrder.getProductType());
+		}else {
+			reCalculatingCostAndTax = true;
+		}
+
+		// if new stateAbbrev is empty, set the original stateAbbrev to the draft one to display to the user
+		if (updatedStateAbbrev == null) {
+			draftUpdatedOrder.setStateAbbrev(existingOrder.getStateAbbrev());
+		}else {
+			reCalculatingCostAndTax = true;
+		}
+
+		// if area is empty, set the original are to the draft one to display to the user
+		if (updatedArea == null || updatedArea.compareTo(BigDecimal.ZERO) == 0) {
+			draftUpdatedOrder.setArea(existingOrder.getArea());
+		}else {
+			reCalculatingCostAndTax = true;
+		}
+
+		// Updated cost and tax if change in type, area, state
+		if(reCalculatingCostAndTax) {
+			this.setCalculatedOrderCostAndTax(draftUpdatedOrder);
+		}else {
+			draftUpdatedOrder.setCostPerSquareFoot(existingOrder.getCostPerSquareFoot());
+			draftUpdatedOrder.setLaborCostPerSquareFoot(existingOrder.getLaborCostPerSquareFoot());
+			draftUpdatedOrder.setLaborCost(existingOrder.getLaborCost());
+			draftUpdatedOrder.setMaterialCost(existingOrder.getMaterialCost());
+			draftUpdatedOrder.setTaxRate(existingOrder.getTaxRate());
+			draftUpdatedOrder.setTax(existingOrder.getTax());
+			draftUpdatedOrder.setTotal(existingOrder.getTotal());
+		}
 	}
-	
+
 	@Override
-	public Order saveUpdatedOrder(Order existingOrder, Order draftUpdatedOrder) {
-	    try {
-	        // Update the order in the orderMap
-	        orderMap.put(draftUpdatedOrder.getOrderNumber(), draftUpdatedOrder);
-	        
-	        // Set existingOrder to null
-	        return null;
-	    } catch (Exception e) {
-	        System.out.println("Something went wrong while copying object properties.");
-	        return existingOrder;
-	    }
+	public Order saveDraftUpdatedOrder(Order existingOrder, Order draftUpdatedOrder) {
+		try {
+			// Update the order in the orderMap
+			orderMap.put(draftUpdatedOrder.getOrderNumber(), draftUpdatedOrder);
+
+			// Set existingOrder to null
+			return null;
+		} catch (Exception e) {
+			System.out.println("Something went wrong while copying object properties.");
+			return existingOrder;
+		}
 	}
 
 
@@ -310,7 +329,7 @@ public class ServiceImpl implements IService {
 	public Map<Integer, Order> getAllOrders() {
 		return orderMap;
 	}
-	
+
 	@Override
 	public void cancelDraftOrder(Order draftOrder) {
 		draftOrder = null;
